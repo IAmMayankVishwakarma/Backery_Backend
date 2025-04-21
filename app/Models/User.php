@@ -42,4 +42,11 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
     ];
+
+    Public function Contact(){
+        return $this->hasMany(Contact::class);
+    }
+    Public function Reservation(){
+        return $this->hasMany(Reservation::class);
+    }
 }
