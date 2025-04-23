@@ -43,18 +43,47 @@ class ContactController extends Controller
      */
     public function store(Request $request)
     {
-        
-    }
+           $validator = Validator::make($request->all(), [
+                'name' => 'required|string|max:255',
+                'email' => 'required|string|email|max:255',
+                'phone' => 'required|string|max:15',
+                'message' => 'required|string|max:500',
+            ]);
+    
+            if ($validator->fails()) {
+                return response()->json(
+                    [
+                    'message' => 'Validation failed',
+                    'errors' => $validator->errors()
+                    ], 422);
+            }
+    
+            $contact = Contact::create($validator->validated());
+    
+            return response()->json(
+                [
+                'message' => 'Contact created successfully',
+                'data' => $contact
+                ]);        
+              }
 
     /**
      * Display the specified resource.
      */
     public function show(string $id)
     {
+        $contact = Contact::find($id);
+        if (!$contact) {
+            return response()->json(
+                [
+                'message' => 'Contact not found',
+                'data' => []
+                ], 404);
+        }
         return response()->json(
             [
             'message' => 'Contact retrieved successfully',
-            'data' => ['id' => $id, 'name' => 'John Doe', 'email' => 'user@abc']
+            'data' => $contact
             ]);
     }
 
@@ -63,10 +92,36 @@ class ContactController extends Controller
      */
     public function update(Request $request, string $id)
     {
+        $contact = Contact::find($id);
+        if (!$contact) {
+            return response()->json(
+                [
+                'message' => 'Contact not found',
+                'data' => []
+                ], 404);
+        }
+
+        $validator = Validator::make($request->all(), [
+            'name' => 'sometimes|required|string|max:255',
+            'email' => 'sometimes|required|string|email|max:255',
+            'phone' => 'sometimes|required|string|max:15',
+            'message' => 'sometimes|required|string|max:500',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(
+                [
+                'message' => 'Validation failed',
+                'errors' => $validator->errors()
+                ], 422);
+        }
+
+        $contact->update($validator->validated());
+
         return response()->json(
             [
             'message' => 'Contact updated successfully',
-            'data' => ['id' => $id, 'name' => $request->name, 'email' => $request->email]
+            'data' => $contact
             ]);
     }
 
@@ -75,10 +130,21 @@ class ContactController extends Controller
      */
     public function destroy(string $id)
     {
+        $contact = Contact::find($id);
+        if (!$contact) {
+            return response()->json(
+                [
+                'message' => 'Contact not found',
+                'data' => []
+                ], 404);
+        }
+
+        $contact->delete();
+
         return response()->json(
             [
             'message' => 'Contact deleted successfully',
-            'data' => ['id' => $id]
+            'data' => []
             ]);
     }
 }
