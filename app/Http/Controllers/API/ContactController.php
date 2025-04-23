@@ -4,21 +4,38 @@ namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Auth;
+use App\Models\user;
+use App\Models\Contact;
+use App\Models\Reservation;
 class ContactController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
     public function index()
-    {
+    {  
+        $contacts = Contact::all();
+        if ($contacts->isEmpty()) {
+            return response()->json(
+                [
+                'message' => 'No contacts found',
+                'data' => []
+                ]);
+        }
         return response()->json(
             [
             'message' => 'Contact list retrieved successfully',
-            'data' => [    ['id' => 1, 'name' => 'John Doe', 'email' => 'user@abc'],
-                ['id' => 2, 'name' => 'Jane Smith', 'email' => 'user@xyz']
-                ]
+            'data' => $contacts
             ]);
+        // return response()->json(
+        //     [
+        //     'message' => 'Contact list retrieved successfully',
+        //     'data' => [    ['id' => 1, 'name' => 'John Doe', 'email' => 'user@abc'],
+        //         ['id' => 2, 'name' => 'Jane Smith', 'email' => 'user@xyz']
+        //         ]
+        //     ]);
             }
 
     /**
@@ -26,11 +43,7 @@ class ContactController extends Controller
      */
     public function store(Request $request)
     {
-        return response()->json(
-            [
-            'message' => 'Contact created successfully',
-            'data' => ['id' => 3, 'name' => $request->name, 'email' => $request->email]
-            ]);
+        
     }
 
     /**
